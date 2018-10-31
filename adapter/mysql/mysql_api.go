@@ -28,7 +28,7 @@ func NewMysqlAPI(dbURI string, useInformationSchema bool) (api *MysqlAPI) {
 	api.useInformationSchema = useInformationSchema
 	lib.Logger.Infof("connected to mysql with conn_str: %s", dbURI)
 	api.UpdateAPIMetadata()
-	lib.Logger.Infof("retrived metadata from mysql database: %s", api.databaseMetadata.DatabaseName)
+	lib.Logger.Infof("retrived metadata from mysql %v database: %s", useInformationSchema, api.databaseMetadata.DatabaseName)
 	api.sql = &SQL{goqu.New("mysql", api.connection), api.databaseMetadata}
 	return
 }
