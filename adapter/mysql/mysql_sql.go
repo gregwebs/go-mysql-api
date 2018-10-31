@@ -92,12 +92,15 @@ func (s *SQL) configBuilder(builder *goqu.Dataset, priT string, opt QueryOption)
 	for _, l := range opt.Links {
 		refT := l
 		refK := s.getPriKeyNameOf(refT)
+		// TODO: find this from foreign key constraints
+		ref_foreign_id := l + "_id"
 		priK := s.getPriKeyNameOf(priT)
-		if s.dbMeta.TableHaveField(priT, refK) {
-			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, refK)))))
+		pri_foreign_id := priT + "_id"
+		if s.dbMeta.TableHaveField(priT, ref_foreign_id) {
+			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, ref_foreign_id)))))
 		}
-		if s.dbMeta.TableHaveField(refT, priK) {
-			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, priK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
+		if s.dbMeta.TableHaveField(refT, pri_foreign_id) {
+			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, pri_foreign_id)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
 		}
 	}
 	if opt.Search != "" {
