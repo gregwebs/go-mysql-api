@@ -97,9 +97,9 @@ func (s *SQL) configBuilder(builder *goqu.Dataset, priT string, opt QueryOption)
 		priK := s.getPriKeyNameOf(priT)
 		pri_foreign_id := priT + "_id"
 		if s.dbMeta.TableHaveField(priT, ref_foreign_id) {
-			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, ref_foreign_id)))))
+			rs = rs.Join(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, ref_foreign_id)))))
 		} else if s.dbMeta.TableHaveField(refT, pri_foreign_id) {
-			rs = rs.InnerJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, pri_foreign_id)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
+			rs = rs.Join(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, pri_foreign_id)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
 		}
 	}
 	if opt.Search != "" {
