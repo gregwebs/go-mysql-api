@@ -2,9 +2,10 @@ package mysql
 
 import (
 	"fmt"
+	"strings"
 
-	"gopkg.in/doug-martin/goqu.v4"
 	. "github.com/Soontao/go-mysql-api/types"
+	"gopkg.in/doug-martin/goqu.v4"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/mysql"
 )
 
@@ -93,13 +94,13 @@ func (s *SQL) configBuilder(builder *goqu.Dataset, priT string, opt QueryOption)
 		refT := l
 		refK := s.getPriKeyNameOf(refT)
 		// TODO: find this from foreign key constraints
-		ref_foreign_id := l + "_id"
+		refForeignID := strings.TrimSuffix(l, "s") + "_id"
 		priK := s.getPriKeyNameOf(priT)
-		pri_foreign_id := priT + "_id"
-		if s.dbMeta.TableHaveField(priT, ref_foreign_id) {
-			rs = rs.Join(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, ref_foreign_id)))))
-		} else if s.dbMeta.TableHaveField(refT, pri_foreign_id) {
-			rs = rs.Join(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, pri_foreign_id)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
+		priForeignID := strings.TrimSuffix(priT, "s") + "_id"
+		if s.dbMeta.TableHaveField(priT, refForeignID) {
+			rs = rs.LeftOuterJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, refK)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, refForeignID)))))
+		} else if s.dbMeta.TableHaveField(refT, priForeignID) {
+			rs = rs.LeftOuterJoin(goqu.I(refT), goqu.On(goqu.I(fmt.Sprintf("%s.%s", refT, priForeignID)).Eq(goqu.I(fmt.Sprintf("%s.%s", priT, priK)))))
 		}
 	}
 	if opt.Search != "" {
