@@ -3,14 +3,14 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"time"
-	. "github.com/Soontao/go-mysql-api/types"
+	"github.com/Soontao/go-mysql-api/adapter"
 	"github.com/Soontao/go-mysql-api/server/lib"
+	. "github.com/Soontao/go-mysql-api/types"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/gommon/log"
 	"gopkg.in/doug-martin/goqu.v4"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/mysql"
-	"github.com/Soontao/go-mysql-api/adapter"
+	"time"
 )
 
 // MysqlAPI
@@ -223,6 +223,10 @@ func (api *MysqlAPI) query(sql string, args ...interface{}) ([]map[string]interf
 				colV = colV.(int64)
 			case []uint8:
 				colV = fmt.Sprintf("%s", colV)
+			}
+			// A join can over-write the existing column
+			if _, ok := m[colName]; ok {
+				colName = "a_" + colName
 			}
 			m[colName] = colV
 		}
